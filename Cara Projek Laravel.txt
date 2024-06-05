@@ -1,0 +1,191 @@
+Cara Projek Laravel :
+
+Jalanin Server Xampp ;
+
+1. cd /opt/lampp
+   sudo ./manager-linux-x64.run
+   sudo /opt/lampp/lampp start
+   
+   
+2. ini untuk cek server yg berjalan 
+   sudo netstat -tuln | grep ':80\|:443'
+   
+   jika ada yg berjalan maka stop
+   sudo systemctl stop apache2
+
+   sudo apt update
+
+3. lalu jalankan lagi 
+    sudo service apache2 start
+
+   http://localhost/phpmyadmin/
+   
+   
+   mysql :
+   sudo mysql
+
+   cek db_port mysql jika error hak acces denied
+
+
+
+
+Dokumnetasi Laravel :
+
+1. composer create-project laravel/laravel larainfo
+
+2. Buat Detail Database dengan Format .ENV jan lupa ganti db portnya jadi 3305
+
+3. composer require laravel/ui
+
+4. php artisan ui bootstrap --auth (harusnya langsung ada di views auth)
+
+6. npm install && npm run dev (jalanin terpisah di terminal lain)
+
+7. php artisan migrate
+
+8. opsional tambhakan colom yang dibuatuhkan pada tabel user, seperti isactive, role
+   tambahkan di php my admin
+
+9. set view, route, public css, dan controller
+
+10. rubah di http/controller/auth
+    logincontrollernya ganti rediretya 
+    protected $redirectTo = "/dashboard";
+    
+    registercontrollern ganti redirectnya 
+    protected $redirectTo = 'after_register';
+
+
+php artisan serve
+
+
+
+11. cara agar rubah agar isactive yes saja yang bisa login
+
+        ada di vendor/laravel/ui/authbackend di authencatiuser terus di fungsi credential 
+
+        jadi sepearti ini 
+          protected function credentials(Request $request)
+            {
+                // return $request->only($this->username(), 'password');
+               return array_merge(
+                    $request->only($this->username(), 'password'),
+                    ['isactive'=>'yes']    
+                );
+            );
+            }
+            
+            
+            
+12. cara agar setelah register tidak langsung login yaitu dengan nonatictak guard di ada di vendor/laravel/ui/authbackend di registeruser
+     dicomen gini
+     
+    // $this->guard()->login($user);
+
+
+13. cara migration yaitu untuk membuat tabel dan kolom nya agar tidak harus di php myadmin
+    
+      php artisan make:migration create_pegawai_table
+      
+      php artisan migrate
+      
+      
+14. cara membuat controller
+     
+     php artisan make:controller MejaController --resource
+     
+     
+15. cara membuat model
+
+     php artisan make:model Meja
+
+   
+16. cara membuat model
+
+     php artisan make:model Meja
+     
+     
+17. cara export pdf 
+
+    composer require barryvdh/laravel-dompdf
+     
+    lalu di config/app tambahkan
+    
+        'providers' => [
+            ...
+            Barryvdh\DomPDF\ServiceProvider::class,
+        ],
+
+        'aliases' => [
+            ...
+            'PDF' => Barryvdh\DomPDF\Facade::class,
+        ],
+
+
+18. cara export excel
+
+    composer require maatwebsite/excel
+    
+    lalu buat file exports nya :
+    
+    php artisan make:export MejaExport
+    
+    php artisan make:export MenuExport
+    
+    lalu di config/app tambahkan 
+    
+        'providers' => [
+            ...
+            Maatwebsite\Excel\ExcelServiceProvider::class,
+        ],
+        
+        
+        'aliases' => [
+            ...
+            'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        ],
+
+
+
+19. install sweatalert
+    composer require realrashid/sweet-alert
+
+    lalu di config/app tambahkan 
+    
+        'providers' => [
+            ...
+            RealRashid\SweetAlert\SweetAlertServiceProvider::class,
+        ],
+
+
+         'aliases' => [
+            ...
+            'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+        ],
+ 
+
+
+20. cara validation yaitu bikin di controller
+    terus cara manggil nya 
+    
+    di class dan @error
+    
+    
+    
+    
+21. jangn lupa tambahkan kolom isactive, role, dan foto untuk tael user
+
+     pake ini aja 
+     
+       Schema::create('users', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('remember_token', 100)->nullable();
+            $table->enum('isactive', ['yes', 'no', 'banned'])->default('yes');
+            $table->enum('role', ['Admin', 'Customer'])->default('Admin');
+            $table->string('foto')->nullable();
+            $table->timestamps();
+        });
